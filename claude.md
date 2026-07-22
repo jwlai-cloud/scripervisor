@@ -1,6 +1,6 @@
 # Scripervisor — build primer for Claude Code
 
-Read `agentic-cinema-plan.md` in this project root first — it's the full architecture, UX design, demo arc, and skill-loader design for this Google Cloud Agentic Cinema hackathon submission. Everything below is a standing instruction for working in this repo; don't re-derive decisions the plan doc already made.
+Read `agentic-cinema-plan.md` first **if you have it** — it's the full architecture, UX design, demo arc, and skill-loader design for this Google Cloud Agentic Cinema hackathon submission. That brief is kept **private (maintainer-only)** and is intentionally excluded from this public repo (see `.gitignore`); if it isn't present, work from this primer and `README.md` alone. Everything below is a standing instruction for working in this repo; don't re-derive decisions the plan doc already made.
 
 ## Before writing any code
 
@@ -11,7 +11,7 @@ Invoke these local skills from `~/.claude/skills` (verify exact names/slugs via 
 
 ## Build order
 
-1. Scaffold the 3 launch role-agents from the plan: **Front Desk** (thin router, no planning authority), **Line Producer** (orchestrator — owns requirement understanding, shot breakdown, delegation), **Script/Continuity** and **Storyboard** as sub-agents. Skip Rights & Clearance for now — it's a stretch goal per the plan's scoping section.
+1. Scaffold the launch crew from the plan: **Front Desk** (thin router, no planning authority), **Line Producer** (orchestrator — owns requirement understanding, shot breakdown, delegation), and **Script/Continuity** + **Storyboard** as its sub-agents. Skip Rights & Clearance for now — it's a stretch goal per the plan's scoping section.
 2. Wire the Post-Production/Asset agent against `McpToolset` using a **mock/local MCP server** (asset-search/metadata-lookup style stub) — the real partner endpoint isn't announced until the week of July 27. Design the connection so swapping in the real one later is a config change, not a re-architecture.
 3. Build the Shot Board UI (three-panel layout: Front Desk request panel / Shot Board grid / Skills & Activity panel) — Design is judged equally with Technological Implementation, so this isn't a backend-only project.
 4. Storyboard agent should generate 2-3 rough variant frames per shot (pick-then-polish), not one locked image per shot — see the plan's "grounding in real production" section for why.
@@ -25,7 +25,9 @@ Invoke these local skills from `~/.claude/skills` (verify exact names/slugs via 
 
 ## Repo setup (do this first, before any other work)
 
-The hackathon requires a **public** repo with a **complete open-source license file**. Set it up with `main` protected so all changes land via PR, not direct push:
+The hackathon requires a **public** repo with a **complete open-source license file**. Set it up with the default branch (**`master`**) protected so all changes land via PR, not direct push:
+
+> **Status — done.** The repo already exists: [`github.com/jwlai-cloud/scripervisor`](https://github.com/jwlai-cloud/scripervisor) (public, Apache-2.0). Default branch is kept as **`master`** (not `main`), protected with **0 required approvals** (bot reviewers only — Sourcery/CodeRabbit), `enforce_admins` on, no force-push/delete, and conversation-resolution required before merge. The recipe below is the original plan — where it says `main`, read `master`; where it says `required_approving_review_count=1`, read `0`.
 
 ```bash
 # create the repo (public, Apache-2.0 license, matches Scion's license so borrowed patterns are compatible)
