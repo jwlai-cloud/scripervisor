@@ -1,0 +1,46 @@
+# --- Scripervisor: private planning docs (kept off the public repo) ---
+agentic-cinema-plan.md
+
+# --- Secrets / credentials (never commit) ---
+.env
+.env.*
+*.key
+*.pem
+service-account*.json
+credentials*.json
+gcp-*.json
+
+# --- Claude Code local state ---
+.claude/settings.local.json
+.claude/*.local.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist-ssr/
+*.local
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
