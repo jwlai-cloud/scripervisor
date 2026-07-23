@@ -6,11 +6,16 @@ Scripervisor (Script + Supervisor) is a submission for the [Agentic Cinema hacka
 
 The product spine is a **Shot Board**: sequential visual shots that gain status (drafted → flagged → approved → assembled/rendered) as the crew works, with inline continuity/rights flags and a linear, append-only revision log. Terms are pinned in [CONTEXT.md](./CONTEXT.md).
 
-> **Status:** crew scaffolded on ADK (A2A-ready) with a local mock MCP server and the Shot Board UI. The real partner MCP endpoint swaps in via one env var (`PARTNER_MCP_URL`) once the roster is announced (week of Jul 27).
+> **Status:** crew scaffolded on **ADK 2.x** (A2A-ready) with a local mock MCP server and the Shot Board UI. The real partner MCP endpoint swaps in via one env var (`PARTNER_MCP_URL`) once the roster is announced (week of Jul 27).
+
+## Two entrypoints
+
+- **`app/agent.py`** — the hierarchical crew (LLM-driven delegation, A2A/live-capable). Front Desk → Line Producer → role-agents.
+- **`app/workflow.py`** — the *same* work as an **ADK 2.0 `Workflow` graph**: orchestration is explicit edges, so the feedback loop is first-class — continuity-first, a director-review HITL interrupt, and a `revise → re-check` cycle before storyboarding/assembly. Not a one-way waterfall.
 
 ## Architecture (summary)
 
-Built on Google's Agent Development Kit (ADK). The org chart:
+Built on Google's Agent Development Kit (ADK 2.x). The org chart:
 
 ```
 Front Desk (root, router — no planning authority)
