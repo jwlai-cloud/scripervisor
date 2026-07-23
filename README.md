@@ -4,18 +4,51 @@
 
 Scripervisor (Script + Supervisor) is a submission for the [Agentic Cinema hackathon](https://agentic-cinema.devpost.com). A coordinator agent (**Line Producer**) delegates across a small set of role-agents — **Script/Continuity**, **Storyboard**, and a **Post-Production/Asset** agent wired to a partner MCP server — while every agent's capabilities are defined by loadable skill packages that any studio, freelancer, or partner can drop in without forking the system.
 
-The product spine is a **Shot Board**: sequential visual shots that gain status (drafted → flagged → approved → rendered) as the crew works, with inline continuity/rights flags and a linear, append-only revision log.
+The product spine is a **Shot Board**: sequential visual shots that gain status (drafted → flagged → approved → assembled/rendered) as the crew works, with inline continuity/rights flags and a linear, append-only revision log. Terms are pinned in [CONTEXT.md](./CONTEXT.md).
 
-> **Status:** Phase 0 — repo governance set up. Agent scaffolding lands in a later PR once the hackathon partner roster is announced (week of Jul 27) and the remaining architecture decisions are confirmed.
+> **Status:** crew scaffolded on ADK (A2A-ready) with a local mock MCP server and the Shot Board UI. The real partner MCP endpoint swaps in via one env var (`PARTNER_MCP_URL`) once the roster is announced (week of Jul 27).
 
 ## Architecture (summary)
 
-Built on Google's Agent Development Kit (ADK):
+Built on Google's Agent Development Kit (ADK). The org chart:
 
-- **Front Desk** — thin user-facing router (a mover, not a creator); collects the plain-English request and hands off. No planning authority.
-- **Line Producer** — backend orchestrator; owns requirement understanding, shot breakdown, model/tool selection, and delegation across sub-agents.
-- **Script/Continuity** & **Storyboard** — launch sub-agents. Rights & Clearance is a stretch goal.
-- **Post-Production/Asset** — talks to a partner MCP server via ADK `McpToolset`; runs against a local mock MCP stub until the real partner endpoint is announced, so the swap is a config change, not a re-architecture.
+```
+Front Desk (root, router — no planning authority)
+  └─ Line Producer (orchestrator, PlanReActPlanner)
+       ├─ Script/Continuity   ── MCP: metadata_lookup
+       ├─ Storyboard          (2-3 variant frames per shot)
+       └─ Post-Production/Asset ── MCP: asset_search, rights_lookup
+```
+
+- **Front Desk** — thin user-facing router (a mover, not a creator); collects the plain-English request and hands off. No planner.
+- **Line Producer** — backend orchestrator with `PlanReActPlanner`; owns requirement understanding, shot breakdown, model/tool selection, delegation, and the human-in-the-loop override gate (`require_confirmation`).
+- **Script/Continuity** — cross-references new content against canon pulled from production metadata (MCP) and flags conflicts. **Storyboard** — generates 2-3 rough variants per shot (pick-then-polish). Rights & Clearance is a stretch goal.
+- **Post-Production/Asset** — talks to a partner MCP server via ADK `McpToolset`; runs against the local mock stub (`mcp_server/mock_server.py`) until the real endpoint is announced, so the swap is a config change (`PARTNER_MCP_URL`), not a re-architecture.
+
+Shared `session.state` (`shots`, `revision_log`, `activity`, `capability_gaps`) is the single source of truth the Shot Board UI renders from.
+
+## Running locally
+
+```bash
+uv sync                                   # install deps
+cp .env.example .env                      # set GOOGLE_CLOUD_PROJECT etc.
+uv run --with pytest pytest tests/unit -q # network-free unit tests
+uv run uvicorn app.fast_api_app:app --port 8000   # serve the crew (A2A card at /a2a/app/.well-known/agent-card.json)
+```
+
+Open `frontend/index.html` in a browser for the Shot Board (seeded with the demo scenario; wire to the backend by replacing the seed in `frontend/app.js`).
+
+## Repository layout
+
+```
+app/                 ADK crew (agent.py assembles the org chart)
+  sub_agents/        front_desk, line_producer, script_continuity, storyboard, post_production
+  tools.py           shared session.state tools (shot board, revision log, HITL override)
+  config.py          model + MCP swap-point (mock stdio ⇄ partner SSE)
+mcp_server/          local mock MCP server (asset_search / metadata_lookup / rights_lookup)
+frontend/            Shot Board UI (three-panel, no build step)
+tests/               unit (no network) + integration (live A2A/Vertex)
+```
 
 ## Governance
 

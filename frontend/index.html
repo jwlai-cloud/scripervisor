@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scripervisor — Shot Board</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1><span class="clap">🎬</span> Scripervisor</h1>
+      <span class="tag">an open, extensible film production crew · Shot Board</span>
+    </div>
+    <div class="gov-pill"><span class="dot"></span> Front Desk → Line Producer → crew</div>
+  </header>
+
+  <div class="workspace">
+    <!-- LEFT: Front Desk ------------------------------------------------- -->
+    <section class="panel frontdesk">
+      <h2>Front Desk</h2>
+      <p class="role">Plain-English requests only. The Front Desk collects and
+        hands off — it makes no creative decisions.</p>
+      <textarea id="request" placeholder="Describe what you want the crew to do…"></textarea>
+      <button id="send">Send to crew →</button>
+      <div class="hint">
+        Try:
+        <code data-fill="Add a night scene where the detective loses her badge.">Add a night scene where the detective loses her badge.</code>
+        <code data-fill="Find a rain-slick night city plate for the opening shot.">Find a rain-slick night city plate for the opening shot.</code>
+      </div>
+    </section>
+
+    <!-- CENTER: Shot Board ----------------------------------------------- -->
+    <section class="panel">
+      <div class="board-head">
+        <h2>Shot Board</h2>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <!-- RIGHT: Skills & Activity ----------------------------------------- -->
+    <section class="panel">
+      <div class="section">
+        <h2>Installed Skills</h2>
+        <div id="skills"></div>
+      </div>
+      <div class="section">
+        <h2>Revision Log</h2>
+        <div id="revlog"></div>
+      </div>
+      <div class="section">
+        <h2>Capability Gaps</h2>
+        <div id="gaps"></div>
+      </div>
+      <div class="section">
+        <h2>Activity</h2>
+        <ul class="log" id="activity"></ul>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
