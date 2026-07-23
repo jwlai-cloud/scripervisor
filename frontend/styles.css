@@ -1,0 +1,163 @@
+/* Scripervisor Shot Board — three-panel production console.
+   Dark, tool-like, film-room aesthetic. No framework, no build step. */
+
+:root {
+  --bg: #0e1116;
+  --panel: #161b22;
+  --panel-2: #1c232d;
+  --line: #2a3340;
+  --text: #e6edf3;
+  --muted: #8b98a8;
+  --accent: #e3b341;        /* clapperboard gold */
+  --accent-dim: #7a642420;
+  --drafted: #8b98a8;
+  --flagged: #f2545b;
+  --approved: #3fb950;
+  --rendered: #58a6ff;
+  --radius: 12px;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; height: 100%;
+  background: var(--bg); color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+
+/* Header ------------------------------------------------------------------ */
+header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px; border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #171d26, #12161c);
+}
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
+.brand h1 .clap { color: var(--accent); }
+.brand .tag { color: var(--muted); font-size: 12px; }
+.gov-pill {
+  margin-left: auto; display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+}
+.gov-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--approved); }
+
+/* Three-panel layout ------------------------------------------------------ */
+.workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 350px;
+  gap: 1px; background: var(--line);
+  height: calc(100vh - 58px);
+}
+.panel { background: var(--bg); overflow-y: auto; padding: 16px; }
+.panel h2 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--muted); margin: 0 0 12px; font-weight: 600;
+}
+
+/* Left — Front Desk ------------------------------------------------------- */
+.frontdesk .role { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.frontdesk textarea {
+  width: 100%; min-height: 96px; resize: vertical;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 11px 12px; font: inherit;
+}
+.frontdesk textarea:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+.frontdesk button {
+  margin-top: 10px; width: 100%; cursor: pointer;
+  background: var(--accent); color: #1a1500; border: 0;
+  border-radius: var(--radius); padding: 10px; font-weight: 700; font-size: 13px;
+}
+.frontdesk button:hover { filter: brightness(1.07); }
+.hint { margin-top: 16px; font-size: 12px; color: var(--muted); }
+.hint code {
+  display: block; margin-top: 6px; padding: 8px 10px; cursor: pointer;
+  background: var(--panel); border: 1px dashed var(--line); border-radius: 8px;
+  color: var(--text); font-size: 12px;
+}
+.hint code:hover { border-color: var(--accent); }
+
+/* Center — Shot Board ----------------------------------------------------- */
+.board-head { display: flex; align-items: center; margin-bottom: 12px; }
+.board-head .count { margin-left: auto; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;
+}
+.frame {
+  position: relative; aspect-ratio: 16 / 9;
+  background:
+    repeating-linear-gradient(90deg, #0c0f14 0 8px, transparent 8px 26px) top/100% 12px no-repeat,
+    repeating-linear-gradient(90deg, #0c0f14 0 8px, transparent 8px 26px) bottom/100% 12px no-repeat,
+    linear-gradient(135deg, #232c38, #141a22);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 12px;
+}
+.frame .id { position: absolute; top: 8px; left: 10px; font-weight: 700; color: var(--text); }
+.variants { position: absolute; bottom: 8px; right: 8px; display: flex; gap: 4px; }
+.variants span {
+  width: 22px; height: 15px; border-radius: 3px; border: 1px solid var(--line);
+  background: #0c0f14; font-size: 9px; display: flex; align-items: center; justify-content: center;
+}
+.variants span.pick { border-color: var(--accent); color: var(--accent); }
+
+.card-body { padding: 11px 12px; display: flex; flex-direction: column; gap: 8px; }
+.scene { font-size: 13px; }
+.meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+.badge {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  padding: 3px 8px; border-radius: 999px; border: 1px solid;
+}
+.badge.drafted { color: var(--drafted); border-color: var(--drafted); }
+.badge.flagged { color: var(--flagged); border-color: var(--flagged); }
+.badge.approved { color: var(--approved); border-color: var(--approved); }
+.badge.rendered { color: var(--rendered); border-color: var(--rendered); }
+
+.flag {
+  background: #2a1214; border-top: 1px solid var(--flagged);
+  padding: 9px 12px; font-size: 12px; color: #ffd7d9;
+}
+.flag .actions { display: flex; gap: 8px; margin-top: 8px; }
+.flag button {
+  cursor: pointer; border-radius: 7px; padding: 5px 10px; font-size: 12px; border: 1px solid var(--line);
+  background: transparent; color: var(--text);
+}
+.flag button.approve { border-color: var(--flagged); color: #ffd7d9; }
+.flag button:hover { filter: brightness(1.2); }
+
+.skill-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.skill-badges .sb {
+  font-size: 10px; color: var(--accent); background: var(--accent-dim);
+  border: 1px solid #6b5a2a; border-radius: 6px; padding: 2px 7px;
+}
+
+/* Right — Skills & Activity ---------------------------------------------- */
+.section + .section { margin-top: 22px; }
+.skill {
+  display: flex; align-items: center; gap: 9px; padding: 9px 10px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 9px; margin-bottom: 7px;
+}
+.skill .ic { width: 26px; height: 26px; border-radius: 6px; background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center; color: var(--accent); }
+.skill .name { font-size: 12px; font-weight: 600; }
+.skill .desc { font-size: 11px; color: var(--muted); }
+
+.log { list-style: none; margin: 0; padding: 0; }
+.log li { display: flex; gap: 9px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.log li .seq { color: var(--muted); min-width: 20px; }
+.log li .who { color: var(--accent); font-weight: 600; }
+
+.rev { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; margin-bottom: 7px; }
+.rev .lbl { font-size: 11px; font-weight: 700; }
+.rev .lbl.Blue { color: #58a6ff; } .rev .lbl.Pink { color: #ff9ecb; }
+.rev .lbl.White { color: #e6edf3; } .rev .lbl.Yellow { color: #e3b341; }
+.rev .why { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.rev .why b { color: var(--text); font-weight: 600; }
+
+.gap { font-size: 12px; color: var(--muted); border-left: 2px solid var(--accent); padding-left: 9px; margin-bottom: 8px; }
+.gap b { color: var(--text); }
