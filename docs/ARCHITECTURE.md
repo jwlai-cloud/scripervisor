@@ -18,13 +18,20 @@ Terms used below are pinned in [`../CONTEXT.md`](../CONTEXT.md).
 | **MCP swap-point** | `app/config.py` | One function returns an `McpToolset` bound to the mock (stdio) or the partner (`PARTNER_MCP_URL`, SSE). |
 | **Mock MCP server** | `mcp_server/mock_server.py` | FastMCP stub: `metadata_lookup` / `asset_search` / `rights_lookup`. Stands in for the partner endpoint (revealed week of Jul 27). |
 | **A2A / HTTP server** | `app/fast_api_app.py` | Serves the crew over A2A (agent card + JSON-RPC) via the ADK `adk_a2a` template. |
+| **Workflow graph** | `app/workflow.py` | ADK 2.0 `Workflow`: the same crew as a graph — conditional routing, a director-review HITL interrupt, and a revise→re-check feedback loop. |
 | **Shot Board UI** | `frontend/` | Three-panel console rendering from the `session.state` shape. |
 
-## ADK topology (reasoning structure)
+## Two orchestration modes
 
-Hierarchical LLM delegation: each parent transfers control to a child. The Line
-Producer is the only agent with a planner; the Front Desk is a deliberately thin
-router (see [ADR 0001](./adr/0001-front-desk-no-planning-authority.md)).
+The crew ships with two entrypoints over the same role-agents, both on **ADK 2.x**.
+
+### 1. Hierarchical crew — `app/agent.py`
+
+LLM-driven delegation: the Line Producer (the only planner) transfers to a
+role-agent, and control transfers **back** when that agent is done — ADK
+sub-agent transfer is bidirectional, not a one-way waterfall. The Front Desk is
+a deliberately thin router (see [ADR 0001](./adr/0001-front-desk-no-planning-authority.md)).
+This entrypoint is A2A/live-capable.
 
 ```mermaid
 graph TD
@@ -52,15 +59,40 @@ graph TD
     class FD router; class LP orch; class SC,SB,PP role; class MOCK,PARTNER,MCP ext;
 ```
 
-## Orchestration shape
+### 2. Workflow graph — `app/workflow.py` (ADK 2.0)
 
-- **Hierarchical, LLM-driven** (not a fixed `SequentialAgent` pipeline): the Line
-  Producer reasons about *which* role-agent to transfer to and *when*, because a
-  request may or may not need a continuity check, storyboard, or asset pass.
-- **Continuity-first rule**: the Line Producer's instruction forces a
-  Script/Continuity pass before anything is drawn or assembled.
-- **Human-in-the-loop**: overriding a continuity Flag is a `require_confirmation`
-  tool — the director's reason is captured as the Revision rationale.
+The same work as an ADK 2.0 `Workflow` graph, where orchestration is **explicit
+edges** rather than an LLM's transfer decisions — which makes the feedback loop
+first-class (see [ADR 0002](./adr/0002-adopt-adk-2.0-workflow-graph.md)).
+
+```mermaid
+flowchart TD
+    S([START]) --> SC["📋 Continuity<br/>single-turn node"]
+    SC --> G{{"continuity_gate<br/>route on flags"}}
+    G -->|clean| SB["🎨 Storyboard"]
+    G -->|flagged| DR{{"🙋 Director review<br/>HITL interrupt"}}
+    DR -->|revise| SC
+    DR -->|approve| SB
+    SB --> PP["🎞️ Post-Production"]
+    PP --> FIN["finalize"]
+
+    classDef role fill:#15202b,stroke:#58a6ff,color:#fff;
+    classDef gate fill:#2a1f0b,stroke:#e3b341,color:#fff;
+    class SC,SB,PP role; class G,DR gate;
+```
+
+The `revise → Continuity` edge is a **real routed cycle**: a flagged shot goes
+back for a fresh check, not forward regardless. Continuity signals the gate via
+`session.state` (so it keeps its MCP/flag tools — an `output_schema` would
+disable them). Role-agents are reused as single-turn nodes.
+
+## Shared orchestration rules
+
+- **Continuity-first**: a Script/Continuity pass runs before anything is drawn or
+  assembled (the Line Producer's instruction in mode 1; the graph's first edge in mode 2).
+- **Human-in-the-loop**: mode 1 uses a `require_confirmation` override tool; mode 2
+  uses a `RequestInput` interrupt node. Either way the director's reason becomes
+  the Revision rationale.
 
 ## Data flow — one representative request
 
@@ -117,7 +149,7 @@ drafted ──▶ flagged ──(override, reason)──▶ approved ──▶ a
 
 ## External dependencies
 
-- **Google ADK** (`google-adk >= 1.27`) — `Agent`, `PlanReActPlanner`, `McpToolset`, `require_confirmation`, `Runner`, `App`.
+- **Google ADK 2.x** (`google-adk >= 2.0`, running 2.5.x) — `Agent`, `PlanReActPlanner`, `McpToolset`, `require_confirmation`, `Runner`, `App`, and the 2.0 `Workflow` graph API (`Workflow`, `node`, `RequestInput`).
 - **Gemini via Vertex AI** — reasoning/routing model (`gemini-flash-latest` default); Imagen for real storyboard frames (mock generator today).
 - **A2A** (`a2a-sdk`) — the crew is exposed as an A2A agent (card + JSON-RPC) so other agentic tools can call it.
 - **MCP** (`mcp`) — partner asset/metadata/rights server; local mock stub until the roster reveal.

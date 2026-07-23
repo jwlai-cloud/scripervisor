@@ -33,6 +33,15 @@ _Snapshot as of 2026-07-23. Paused; resuming next week._
   **status is a state machine** (no regression from approved/assembled/rendered).
 - [ADR 0001](./adr/0001-front-desk-no-planning-authority.md).
 
+### ADK 2.0 + Workflow graph (PR #4, merged)
+- Bumped to **ADK 2.x** (running 2.5.0); the hierarchical crew runs unchanged.
+- Added a second entrypoint `app/workflow.py`: the crew as an ADK 2.0 `Workflow`
+  graph with conditional routing, a director-review **HITL interrupt**, and a
+  **revise → re-check feedback loop** (a real routed cycle) — the answer to the
+  "waterfall / no feedback" critique.
+- [ADR 0002](./adr/0002-adopt-adk-2.0-workflow-graph.md). Verified: 7 unit tests
+  pass, `ruff` clean, both entrypoints construct, mock MCP boots on 2.5.
+
 ## Deferred (by plan)
 - Real partner MCP endpoint — announced week of Jul 27; swaps in via `PARTNER_MCP_URL`.
 - Rights & Clearance agent — stretch (Post-Production does `rights_lookup` for now).
@@ -43,13 +52,15 @@ _Snapshot as of 2026-07-23. Paused; resuming next week._
 - A2A discovery/composition demo with an external agent.
 
 ## Known risks
-- PR #2 merged with **no substantive bot review** (CodeRabbit + Sourcery both
-  rate-limited that round). A proper code-review pass over the merged crew is
-  outstanding.
+- **PRs #2, #3, #4 merged with no substantive bot review** (CodeRabbit + Sourcery
+  rate-limited). A proper code-review pass over the merged crew is outstanding.
+- The graph's **live end-to-end run** (HITL resume loop) is unverified — needs
+  Vertex creds; only construction + ADK graph-validation is exercised.
 - Video-gen latency is a live-demo risk — storyboard stays still-image by default.
 
 ## Next (next week)
-1. Code-review pass over the merged crew (correctness + ADK idiom).
-2. Wire the partner MCP once announced; keep mock as demo fallback.
-3. Wire the Shot Board to the live backend (`session.state` → UI).
-4. First skill package + runtime loader (the differentiator).
+1. Code-review pass over the merged crew (correctness + ADK idiom), once bot limits reset.
+2. Live-run the Workflow graph end to end (HITL resume) against Vertex.
+3. Wire the partner MCP once announced; keep mock as demo fallback.
+4. Wire the Shot Board to the live backend (`session.state` → UI).
+5. First skill package + runtime loader (the differentiator).
