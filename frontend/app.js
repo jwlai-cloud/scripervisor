@@ -27,7 +27,7 @@ const STATE = {
     },
     {
       shot_id: "S3", scene: "Establishing — rain-slick city street, neon",
-      status: "rendered", last_touched_by: "post-production",
+      status: "assembled", last_touched_by: "post-production",
       variants: [{ v: 1, angle: "wide", pick: true }],
       skill_badges: ["day-for-night grading applied", "PLATE-014 · cleared"], flags: [],
     },

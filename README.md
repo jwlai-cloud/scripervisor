@@ -4,7 +4,7 @@
 
 Scripervisor (Script + Supervisor) is a submission for the [Agentic Cinema hackathon](https://agentic-cinema.devpost.com). A coordinator agent (**Line Producer**) delegates across a small set of role-agents — **Script/Continuity**, **Storyboard**, and a **Post-Production/Asset** agent wired to a partner MCP server — while every agent's capabilities are defined by loadable skill packages that any studio, freelancer, or partner can drop in without forking the system.
 
-The product spine is a **Shot Board**: sequential visual shots that gain status (drafted → flagged → approved → rendered) as the crew works, with inline continuity/rights flags and a linear, append-only revision log.
+The product spine is a **Shot Board**: sequential visual shots that gain status (drafted → flagged → approved → assembled/rendered) as the crew works, with inline continuity/rights flags and a linear, append-only revision log. Terms are pinned in [CONTEXT.md](./CONTEXT.md).
 
 > **Status:** crew scaffolded on ADK (A2A-ready) with a local mock MCP server and the Shot Board UI. The real partner MCP endpoint swaps in via one env var (`PARTNER_MCP_URL`) once the roster is announced (week of Jul 27).
 

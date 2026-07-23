@@ -13,6 +13,7 @@
   --drafted: #8b98a8;
   --flagged: #f2545b;
   --approved: #3fb950;
+  --assembled: #a371f7;
   --rendered: #58a6ff;
   --radius: 12px;
   font-synthesis: none;
@@ -116,6 +117,7 @@ header {
 .badge.drafted { color: var(--drafted); border-color: var(--drafted); }
 .badge.flagged { color: var(--flagged); border-color: var(--flagged); }
 .badge.approved { color: var(--approved); border-color: var(--approved); }
+.badge.assembled { color: var(--assembled); border-color: var(--assembled); }
 .badge.rendered { color: var(--rendered); border-color: var(--rendered); }
 
 .flag {

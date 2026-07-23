@@ -61,3 +61,13 @@ def test_storyboard_generates_two_to_three_variants() -> None:
     res = generate_shot_variants("S1", "night alley chase", "low-angle wide", c)
     assert 2 <= len(res["variants"]) <= 3
     assert c.state["shots"][0]["variants"] == res["variants"]
+
+
+def test_generating_variants_does_not_regress_an_approved_shot() -> None:
+    # Status is a state machine: re-drafting variants must not knock an already
+    # approved shot back to "drafted".
+    c = ctx()
+    upsert_shot("S1", "night alley", "approved", "line-producer", c)
+    generate_shot_variants("S1", "night alley chase", "low-angle wide", c)
+    assert c.state["shots"][0]["status"] == "approved"
+    assert len(c.state["shots"][0]["variants"]) == 3

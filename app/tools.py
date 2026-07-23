@@ -193,7 +193,10 @@ def generate_shot_variants(
     for shot in shots:
         if shot["shot_id"] == shot_id:
             shot["variants"] = variants
-            shot["status"] = "drafted"
+            # Status is a state machine: attaching variants must never regress a
+            # shot that's already been accepted or finished. Only initialise it.
+            if shot.get("status") in (None, "", "drafted"):
+                shot["status"] = "drafted"
             break
     tool_context.state["shots"] = shots
     _activity(tool_context, "storyboard", f"drafted {len(variants)} variants for {shot_id}")
